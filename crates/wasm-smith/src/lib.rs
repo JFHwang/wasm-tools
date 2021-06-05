@@ -812,12 +812,49 @@ where
             params.push(self.arbitrary_valtype(u)?);
             Ok(true)
         })?;
-        arbitrary_loop(u, 0, 20, |u| {
+        arbitrary_loop(u, 0, 1, |u| {
             results.push(self.arbitrary_valtype(u)?);
             Ok(true)
         })?;
         Ok(Rc::new(FuncType { params, results }))
     }
+/*
+    fn rand_wasi(&self) -> Result<(Option<String>, Result<EntityType>)> {
+        "proc_exit" (func (;0;) (type 3)))  (func (param i32)))
+        "fd_write" (func (;1;) (type 14)))  (func (param i32 i32 i32 i32) (result i32)))
+        if / 
+        if entities.funcs < self.config.max_funcs() && self.func_types.len() > 0 {
+            choices.push(|u, m, e| {
+                e.funcs += 1;
+                let idx = *u.choose(&m.func_types)?;
+                let ty = m.func_type(idx);
+                Ok(EntityType::Func(idx, ty.clone()))
+            });
+        }
+        let mut choices: Vec<
+            fn(&mut Unstructured, &mut ConfiguredModule<C>, &mut Entities) -> Result<EntityType>,
+        > = Vec::with_capacity(6);
+
+    fn ty(&self, idx: u32) -> &Type {
+        match &self.types[idx as usize] {
+            LocalType::Defined { section, nth } => {
+                if let InitialSection::Type(list) = &self.initial_sections[*section] {
+                    return &list[*nth];
+                }
+                panic!("looked up a type with the wrong index")
+            }
+            LocalType::Aliased(ty) => ty,
+        }
+    }
+
+    fn func_types<'a>(&'a self) -> impl Iterator<Item = (u32, &'a FuncType)> + 'a {
+        self.func_types
+            .iter()
+            .copied()
+            .map(move |type_i| (type_i, &**self.func_type(type_i)))
+
+    }
+*/
 
     fn arbitrary_module_type(
         &mut self,
@@ -831,6 +868,9 @@ where
         let mut type_size = exports.type_size;
         if !entities.max_reached(&self.config) {
             arbitrary_loop(u, 0, self.config.max_imports(), |u| {
+//                let module = "wasi_snapshot_preview1";
+//                let (name, ty) = rand_wasi()?;
+//                
                 let (module, name) = unique_import_strings(1_000, &mut names, true, u)?;
                 let ty = self.arbitrary_entity_type(u, entities)?;
                 match type_size.checked_add(ty.size() + 1) {

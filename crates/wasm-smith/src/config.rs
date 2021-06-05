@@ -156,7 +156,8 @@ pub trait Config: for<'a> Arbitrary<'a> + Default + Clone {
     /// The maximum, in 64k Wasm pages, of any memory's initial or maximum size.
     /// Defaults to 2^16 = 65536 (the maximum possible for 32-bit Wasm).
     fn max_memory_pages(&self) -> u32 {
-        65536
+        32767
+        //65536
     }
 
     /// Whether every Wasm memory must have a maximum size specified. Defaults
@@ -328,7 +329,8 @@ impl<'a> Arbitrary<'a> for SwarmConfig {
             max_instructions: u.int_in_range(0..=MAX_MAXIMUM)?,
             max_memories: u.int_in_range(0..=100)?,
             max_tables,
-            max_memory_pages: u.int_in_range(0..=65536)?,
+//            max_memory_pages: u.int_in_range(0..=65536)?,
+            max_memory_pages: u.int_in_range(0..=32767)?,
             min_uleb_size: u.int_in_range(0..=5)?,
             bulk_memory_enabled: u.arbitrary()?,
             reference_types_enabled,
